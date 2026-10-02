@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>WAR — Estratégia Global</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="toast"></div>
+
+  <section id="home" class="screen active">
+    <div class="hero">
+      <div class="brand"><span>WAR</span><small>ESTRATÉGIA GLOBAL</small></div>
+      <p class="subtitle">Conquiste territórios. Faça alianças. Desconfie de todos.</p>
+
+      <div class="panel menu-panel">
+        <label>Seu nome</label>
+        <input id="nameInput" maxlength="18" placeholder="Ex.: Carnieli">
+        <div class="row">
+          <button id="createBtn" class="primary">CRIAR SALA</button>
+          <button id="joinBtn">ENTRAR EM SALA</button>
+        </div>
+        <div id="joinBox" class="hidden">
+          <label>Código da sala</label>
+          <input id="roomInput" maxlength="8" placeholder="ABC123">
+          <button id="joinConfirm" class="primary wide">ENTRAR</button>
+        </div>
+        <p class="hint">A sala usa conexão P2P pelo navegador. O site pode ficar hospedado no GitHub Pages.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="lobby" class="screen">
+    <div class="lobby-card panel">
+      <div class="topline">
+        <div><span class="eyebrow">SALA</span><h1 id="roomCodeLabel">------</h1></div>
+        <button id="copyRoom">COPIAR CÓDIGO</button>
+      </div>
+      <p>Compartilhe o código com seus amigos.</p>
+      <div id="playerList" class="player-list"></div>
+      <div class="row">
+        <button id="startBtn" class="primary">INICIAR PARTIDA</button>
+        <button id="leaveBtn">SAIR</button>
+      </div>
+      <div class="status" id="networkStatus">Conectando...</div>
+    </div>
+  </section>
+
+  <section id="game" class="screen game-screen">
+    <header class="game-header">
+      <div class="mini-brand">WAR <span>GLOBAL</span></div>
+      <div class="turn-info">
+        <strong id="turnText">Preparando...</strong>
+        <span id="phaseText">—</span>
+      </div>
+      <div class="header-actions">
+        <button id="objectiveBtn">🎯 OBJETIVO</button>
+        <button id="rulesBtn">REGRAS</button>
+      </div>
+    </header>
+
+    <main class="game-layout">
+      <aside class="sidebar left">
+        <div class="side-title">JOGADORES</div>
+        <div id="playersGame"></div>
+        <div class="side-title">MEU EXÉRCITO</div>
+        <div class="army-stats">
+          <div><span>Exércitos</span><b id="myArmies">0</b></div>
+          <div><span>Territórios</span><b id="myTerritories">0</b></div>
+          <div><span>Reforços</span><b id="myReinforcements">0</b></div>
+        </div>
+        <div class="side-title">UNIDADES</div>
+        <div class="unit-grid">
+          <button class="unit active" data-unit="soldier">● <span>Soldado</span></button>
+          <button class="unit" data-unit="tank">▰ <span>Tanque +2</span></button>
+          <button class="unit" data-unit="plane">✦ <span>Avião +2</span></button>
+          <button class="unit" data-unit="ship">◆ <span>Barco +2</span></button>
+        </div>
+      </aside>
+
+      <section class="board-wrap">
+        <div class="board-tools">
+          <span id="selectionHint">Selecione um território</span>
+          <button id="endPhaseBtn" class="primary small">FINALIZAR FASE</button>
+        </div>
+        <div id="map" class="map"></div>
+        <div id="battleLog" class="battle-log"></div>
+      </section>
+
+      <aside class="sidebar right">
+        <div class="side-title">COMUNICAÇÃO</div>
+        <div id="voiceBox" class="voice-box">
+          <div class="voice-head"><span>🔊 Sala de voz</span><button id="micBtn">MIC OFF</button></div>
+          <div id="voiceUsers" class="voice-users"></div>
+        </div>
+
+        <div class="side-title">CHAT</div>
+        <div class="tabs">
+          <button class="tab active" data-chat="public">GLOBAL</button>
+          <button class="tab" data-chat="private">PRIVADO</button>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input">
+          <input id="chatInput" maxlength="180" placeholder="Digite uma mensagem...">
+          <button id="sendChat">➤</button>
+        </div>
+        <div id="privateTarget" class="private-target hidden"></div>
+
+        <div class="side-title">AÇÕES</div>
+        <div class="action-buttons">
+          <button id="reinforceBtn">➕ COLOCAR REFORÇOS</button>
+          <button id="moveBtn">↔ REMANEJAR</button>
+          <button id="attackBtn" class="danger">⚔ ATACAR</button>
+          <button id="allianceBtn">🤝 PROPOR ALIANÇA</button>
+        </div>
+      </aside>
+    </main>
+  </section>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" id="modalClose">×</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
