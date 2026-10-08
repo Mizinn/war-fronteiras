@@ -1,0 +1,8 @@
+{
+  "name": "war-command",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix server start",
+    "server:dev": "npm --prefix server run dev"
+  }
+}

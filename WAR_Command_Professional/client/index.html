@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WAR — V3 Mapa Mundial</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<section id="menu">
+  <div class="command-shell">
+    <div class="scanline"></div>
+    <header class="command-header">
+      <div class="brand-lockup">
+        <div class="brand-mark">W</div>
+        <div>
+          <div class="eyebrow">COMMAND NETWORK // ONLINE</div>
+          <h1>WAR <span>COMMAND</span></h1>
+          <p>Strategic browser wargame • global theater</p>
+        </div>
+      </div>
+      <div class="system-status"><i></i> SYSTEMS NOMINAL</div>
+    </header>
+
+    <main class="command-grid">
+      <section class="briefing">
+        <div class="section-tag">MISSION CONTROL</div>
+        <h2>Monte sua operação.</h2>
+        <p>Crie uma sala, configure a partida e envie o código para seus amigos. A interface foi organizada como um painel de comando de um jogo de estratégia.</p>
+
+        <label class="field-label">CALLSIGN / NOME DO JOGADOR</label>
+        <input id="name" maxlength="18" placeholder="Ex.: COMMANDER">
+
+        <div class="setup-grid">
+          <div>
+            <label class="field-label">JOGADORES</label>
+            <select id="v4Players">
+              <option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">TEMPO POR TURNO</label>
+            <select id="v4Time">
+              <option>Sem limite</option><option>30 segundos</option><option selected>60 segundos</option><option>120 segundos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="switch-list">
+          <label><span>IA para preencher vagas</span><input id="v4AI" type="checkbox" checked><b></b></label>
+          <label><span>Alianças secretas</span><input id="v4Alliance" type="checkbox" checked><b></b></label>
+          <label><span>Missões secretas</span><input id="v4Mission" type="checkbox" checked><b></b></label>
+          <label><span>Comunicação por voz</span><input id="v4Voice" type="checkbox" checked><b></b></label>
+        </div>
+
+        <button class="command-btn primary" onclick="v4CreateRoom()"><span>▶</span> INICIAR OPERAÇÃO</button>
+        <button class="command-btn secondary" onclick="v4ShowJoin()">ENTRAR EM UMA SALA</button>
+
+        <div id="v4Join" class="join-panel">
+          <label class="field-label">CÓDIGO DA SALA</label>
+          <div class="inline-field"><input id="v4JoinCode" maxlength="8" placeholder="A7K92P"><button class="command-btn small" onclick="v4JoinRoom()">ENTRAR</button></div>
+        </div>
+      </section>
+
+      <aside class="intel">
+        <div class="section-tag">GLOBAL THEATER</div>
+        <div class="radar">
+          <div class="radar-ring r1"></div><div class="radar-ring r2"></div><div class="radar-ring r3"></div>
+          <div class="radar-sweep"></div><div class="radar-cross x"></div><div class="radar-cross y"></div>
+          <img src="assets/war-map.png" alt="Mapa do tabuleiro">
+        </div>
+        <div class="intel-row"><span>THEATER</span><b>WORLD</b></div>
+        <div class="intel-row"><span>PLAYERS</span><b>2 — 6</b></div>
+        <div class="intel-row"><span>MODE</span><b>STRATEGIC</b></div>
+        <div class="room-card">
+          <span>ROOM CODE</span>
+          <strong id="v4Code">------</strong>
+          <small id="v4RoomInfo">O código aparecerá aqui depois da criação.</small>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="command-footer">
+      <span>WAR COMMAND v5</span>
+      <span>CLIENT • SERVER • REALTIME READY</span>
+      <span>GITHUB PAGES COMPATIBLE</span>
+    </footer>
+  </div>
+</section>
+
+<section id="game" class="hidden">
+ <div class="top">
+  <b>WAR</b>
+  <span id="turn">Seu turno</span>
+  <button class="btn attack" onclick="attackMode()">⚔ ATACAR</button>
+ </div>
+ <div class="layout">
+  <div class="boardFrame">
+   <div class="board" id="board">
+    <img class="map" src="assets/war-map.png" alt="Tabuleiro enviado pelo jogador">
+    <svg class="overlay" viewBox="0 0 1500 1125" preserveAspectRatio="none" id="svg"></svg>
+    <div id="pieces"></div>
+   </div>
+  </div>
+  <aside class="side">
+   <div class="card"><h3>SEU EXÉRCITO</h3><div class="stats">
+    <div class="stat">Tropas<strong id="troops">0</strong></div>
+    <div class="stat">Territórios<strong id="territories">0</strong></div>
+   </div></div>
+   <div class="card"><h3>COMBATE</h3><div class="sel" id="selection">Arraste uma peça entre territórios aliados conectados.<br><br>Clique em <b>ATACAR</b> para escolher origem e destino.</div></div>
+   <div class="card"><h3>CORES DOS JOGADORES</h3>
+    <div class="colors" id="colors"></div>
+   </div>
+   <div class="card"><h3>REGISTRO</h3><div class="log" id="log"></div></div>
+   <div class="card"><div style="font-size:12px;color:#b8c2c9;line-height:1.45">As linhas coloridas acompanham os limites dos territórios. A peça mostra a quantidade de tropas daquele território. Arraste uma peça para um território aliado conectado para mover 1 tropa.</div></div>
+  </aside>
+ </div>
+</section>
+
+<div class="modal hidden" id="modal">
+ <div class="combat">
+  <h2 id="combatTitle">Combate</h2>
+  <div id="dice"></div>
+  <p id="combatResult"></p>
+  <button class="btn primary" onclick="closeModal()">CONTINUAR</button>
+ </div>
+</div>
+
+<script>
+const COLORS=["#20d47a","#ff4b4b","#ffd23f","#39a9ff","#d65cff","#ff8c3a"];
+const TERRITORIES=[
+{name:'Alasca', pts:'38,221 165,219 208,270 177,325 79,329 39,286', continent:'América do Norte'},
+{name:'Mackenzie', pts:'164,218 301,226 352,275 319,326 207,326 177,280', continent:'América do Norte'},
+{name:'Vancouver', pts:'207,326 319,326 335,386 282,433 199,423 177,363', continent:'América do Norte'},
+{name:'Ottawa', pts:'319,326 393,302 438,349 418,410 335,386', continent:'América do Norte'},
+{name:'Califórnia', pts:'199,423 282,433 323,491 276,531 211,510 180,469', continent:'América do Norte'},
+{name:'Nova York', pts:'323,423 418,410 442,468 397,501 330,490', continent:'América do Norte'},
+{name:'México', pts:'277,530 332,491 397,501 367,555 311,578', continent:'América do Norte'},
+{name:'Labrador', pts:'394,301 455,249 512,276 500,337 438,349', continent:'América do Norte'},
+{name:'Groenlândia', pts:'447,105 594,103 622,190 565,265 489,258 448,211', continent:'América do Norte'},
+{name:'Islândia', pts:'574,278 618,267 646,295 616,316 577,308', continent:'Europa'},
+{name:'Inglaterra', pts:'621,310 651,292 673,323 648,350 621,341', continent:'Europa'},
+{name:'França', pts:'646,350 705,340 723,378 686,409 646,390', continent:'Europa'},
+{name:'Alemanha', pts:'705,337 758,333 776,374 738,405 706,380', continent:'Europa'},
+{name:'Polônia', pts:'758,331 821,326 839,368 803,400 764,378', continent:'Europa'},
+{name:'Suécia', pts:'737,235 786,220 817,278 785,330 742,303', continent:'Europa'},
+{name:'Moscou', pts:'785,278 875,251 902,311 867,361 811,345', continent:'Europa'},
+{name:'Omsk', pts:'873,259 953,236 989,285 953,333 884,321', continent:'Ásia'},
+{name:'Udminka', pts:'945,183 1057,166 1094,224 1061,277 972,267', continent:'Ásia'},
+{name:'Sibéria', pts:'1055,128 1270,130 1360,205 1302,275 1094,225', continent:'Ásia'},
+{name:'Vladivostok', pts:'1267,198 1432,235 1408,316 1301,337 1278,281', continent:'Ásia'},
+{name:'Tchita', pts:'1062,276 1172,266 1212,324 1170,378 1080,347', continent:'Ásia'},
+{name:'Aral', pts:'933,330 1016,309 1060,349 1025,397 956,390', continent:'Ásia'},
+{name:'Mongólia', pts:'1100,344 1208,326 1261,370 1215,423 1117,416', continent:'Ásia'},
+{name:'China', pts:'1125,413 1264,372 1284,454 1234,514 1137,500', continent:'Ásia'},
+{name:'Índia', pts:'1017,401 1116,412 1137,500 1087,541 1027,496', continent:'Ásia'},
+{name:'Vietnã', pts:'1128,497 1208,495 1225,558 1162,570 1127,537', continent:'Ásia'},
+{name:'Japão', pts:'1298,405 1355,389 1380,443 1325,461', continent:'Ásia'},
+{name:'Oriente Médio', pts:'888,421 1018,398 1055,450 1023,506 947,511 902,474', continent:'Ásia'},
+{name:'Egito', pts:'813,479 892,470 929,526 898,574 820,558', continent:'África'},
+{name:'Argélia', pts:'620,475 812,469 827,548 765,599 645,583 600,527', continent:'África'},
+{name:'Sudão', pts:'829,558 930,525 1000,565 967,651 879,666 817,603', continent:'África'},
+{name:'Congo', pts:'773,598 881,640 880,718 814,748 752,697', continent:'África'},
+{name:'África do Sul', pts:'753,700 879,708 878,799 806,852 742,789', continent:'África'},
+{name:'Madagascar', pts:'907,662 947,650 964,724 934,756 902,722', continent:'África'},
+{name:'Venezuela', pts:'354,573 451,558 494,620 444,666 363,634', continent:'América do Sul'},
+{name:'Brasil', pts:'449,631 567,613 623,680 580,774 510,823 438,752', continent:'América do Sul'},
+{name:'Peru', pts:'366,637 442,656 475,733 438,791 384,751', continent:'América do Sul'},
+{name:'Argentina', pts:'438,752 510,822 487,947 430,1018 395,899', continent:'América do Sul'},
+{name:'Chile', pts:'383,750 426,782 407,933 379,881', continent:'América do Sul'},
+{name:'S<script src="js/app.js" defer></script>
