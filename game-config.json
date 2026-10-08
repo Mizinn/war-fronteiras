@@ -1,7 +1,0 @@
-{
-  "game": "WAR Command",
-  "maxPlayers": 6,
-  "minPlayers": 2,
-  "dice": {"attack": 3, "defense": 3},
-  "features": ["missions", "secret-alliances", "direct-messages", "voice", "drag-troops"]
-}
